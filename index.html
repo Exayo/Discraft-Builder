@@ -18,6 +18,10 @@
         
         <h3>Output:</h3>
         <pre id="output"></pre>
+        <div class="char-counter">
+            Liczba znaków: <span id="charCount">0</span> 
+            <span class="nitro-info">(Jeśli masz Nitro to 4000)</span>
+        </div>
     </div>
 
     <script>
@@ -117,22 +121,43 @@
                 'YellowFlower': 'm12'
             };
 
-            const output = gridData.map(row => {
-                let rowOutput = '';
+            let total = 0;
+            const outputLines = gridData.map(row => {
+                let line = '';
                 for (let j = 0; j < row.length; j++) {
                     const cell = row[j];
+                    let code;
+                    let shouldAdd = false;
+
                     if (cell !== 'Air') {
-                        rowOutput += `:${blockCodes[cell]}:`;
+                        code = blockCodes[cell];
+                        line += `:${code}:`;
+                        shouldAdd = true;
                     } else {
-                        // Sprawdź czy po prawej są jakieś nie-air bloki
                         const hasNonAirRight = row.slice(j + 1).some(c => c !== 'Air');
                         if (hasNonAirRight) {
-                            rowOutput += `:${blockCodes[cell]}:`;
+                            code = blockCodes[cell];
+                            line += `:${code}:`;
+                            shouldAdd = true;
                         }
                     }
+
+                    if (shouldAdd) {
+                        const numberPart = parseInt(code.substring(1), 10);
+                        total += numberPart >= 10 ? 26 : 25;
+                    }
                 }
-                return rowOutput;
-            }).join('\n');
+                return line;
+            });
+
+            const output = outputLines.join('\n');
+            const charCountElement = document.getElementById('charCount');
+            
+            // Aktualizacja wyświetlacza
+            charCountElement.innerHTML = `
+                <span class="${total > 2000 ? 'limit-warning' : ''}">${total}</span>
+                / 2000
+            `;
             
             document.getElementById('output').textContent = output;
         }

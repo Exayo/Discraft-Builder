@@ -42,3 +42,14 @@
     padding: 10px;
     background: #f0f0f0;
 }
+
+.char-counter {
+    margin-top: 10px;
+    font-family: monospace;
+    color: #666;
+}
+
+.limit-warning {
+    color: red;
+    font-weight: bold;
+}
