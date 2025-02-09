@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discraft Builder 3001 by Exayo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div>
+            Wiersze: <input type="number" id="rows" value="10" min="1">
+            Kolumny: <input type="number" id="cols" value="10" min="1">
+            <button onclick="createGrid()">Generuj</button>
+        </div>
+        
+        <div class="tools" id="tools"></div>
+        
+        <div id="grid" class="grid"></div>
+        
+        <h3>Output:</h3>
+        <pre id="output"></pre>
+    </div>
+
+    <script>
+        const blocks = [
+            'Grass', 'Dirt', 'Steve1', 'Steve2', 'Obsidian', 
+            'Portal', 'Leaves1', 'Log', 'RedFlower', 
+            'YellowFlower', 'Chest', 'Air'
+        ];
+        
+        let currentTool = 'Air';
+        let isMouseDown = false;
+        let gridData = [];
+        
+        function createGrid() {
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            gridData = [];
+            
+            // Inicjowanie
+            for(let i = 0; i < rows; i++) {
+                gridData.push(Array(cols).fill('Air'));
+            }
+            
+            // Elementy siatki
+            for(let i = 0; i < rows; i++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                
+                for(let j = 0; j < cols; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.type = 'Air';
+                    cell.style.backgroundColor = getColor('Air');
+                    
+                    cell.addEventListener('mousedown', () => {
+                        isMouseDown = true;
+                        paintCell(i, j, cell);
+                    });
+                    
+                    cell.addEventListener('mouseover', () => {
+                        if(isMouseDown) paintCell(i, j, cell);
+                    });
+                    
+                    row.appendChild(cell);
+                }
+                grid.appendChild(row);
+            }
+            
+            updateOutput();
+        }
+        
+        function paintCell(row, col, cell) {
+            if(currentTool === 'Eraser') {
+                gridData[row][col] = 'Air';
+            } else {
+                gridData[row][col] = currentTool;
+            }
+            
+            cell.dataset.type = gridData[row][col];
+            cell.style.backgroundColor = getColor(gridData[row][col]);
+            updateOutput();
+        }
+        
+        function getColor(type) {
+            const colors = {
+                'Grass': '#00ff00',
+                'Dirt': '#804000',
+                'Steve1': '#87CEEB',
+                'Steve2': '#4682B4',
+                'Obsidian': '#191970',
+                'Portal': '#800080',
+                'Leaves1': '#008000',
+                'Log': '#8B4513',
+                'RedFlower': '#ff0000',
+                'YellowFlower': '#ffff00',
+                'Chest': '#D2691E',
+                'Air': '#ffffff'
+            };
+            return colors[type];
+        }
+        
+        function updateOutput() {
+            const blockCodes = {
+                'Obsidian': 'm1',
+                'Portal': 'm2',
+                'Grass': 'm3',
+                'Steve1': 'm4',
+                'Steve2': 'm5',
+                'Dirt': 'm6',
+                'Air': 'm7',
+                'Leaves': 'm8',
+                'Log': 'm9',
+                'Chest': 'm10',
+                'RedFlower': 'm11',
+                'YellowFlower': 'm12'
+            };
+
+            const output = gridData.map(row => {
+                let rowOutput = '';
+                for (let j = 0; j < row.length; j++) {
+                    const cell = row[j];
+                    if (cell !== 'Air') {
+                        rowOutput += `:${blockCodes[cell]}:`;
+                    } else {
+                        // Sprawdź czy po prawej są jakieś nie-air bloki
+                        const hasNonAirRight = row.slice(j + 1).some(c => c !== 'Air');
+                        if (hasNonAirRight) {
+                            rowOutput += `:${blockCodes[cell]}:`;
+                        }
+                    }
+                }
+                return rowOutput;
+            }).join('\n');
+            
+            document.getElementById('output').textContent = output;
+        }
+        
+        // Narzędzia
+        function initTools() {
+            const toolsContainer = document.getElementById('tools');
+            
+            blocks.forEach(block => {
+                const tool = document.createElement('div');
+                tool.className = 'tool';
+                tool.textContent = block;
+                tool.style.backgroundColor = getColor(block);
+                
+                tool.addEventListener('click', () => {
+                    document.querySelectorAll('.tool').forEach(t => t.classList.remove('selected'));
+                    tool.classList.add('selected');
+                    currentTool = block;
+                });
+                
+                toolsContainer.appendChild(tool);
+            });
+        }
+        
+        document.addEventListener('mouseup', () => isMouseDown = false);
+        
+        initTools();
+        createGrid();
+    </script>
+</body>
+</html>
