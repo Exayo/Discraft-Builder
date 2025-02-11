@@ -1,7 +1,7 @@
 const blocks = [
     'Grass', 'Dirt', 'Steve1', 'Steve2', 'Obsidian', 
     'Portal', 'Leaves', 'Log', 'RedFlower', 
-    'YellowFlower', 'Chest', 'Air'
+    'YellowFlower', 'Chest', 'Air', 'Stone'
 ];
 
 let currentTool = 'Air';
@@ -73,7 +73,8 @@ function getColor(type) {
         'RedFlower': '#ff0000',
         'YellowFlower': '#ffff00',
         'Chest': '#D2691E',
-        'Air': '#ffffff'
+        'Air': '#ffffff',
+        'Stone': '#808080'
     };
     return colors[type];
 }
@@ -91,7 +92,8 @@ function updateOutput() {
         'Log': 'm9',
         'Chest': 'm10',
         'RedFlower': 'm11',
-        'YellowFlower': 'm12'
+        'YellowFlower': 'm12',
+        'Stone': 'm13'
     };
 
     let total = 0;
