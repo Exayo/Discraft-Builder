@@ -2,11 +2,12 @@
 <html>
 <head>
     <title>Discraft Builder 3001 by Exayo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <div>
+        <div class="grid-controls">
             Wiersze: <input type="number" id="rows" value="10" min="1">
             Kolumny: <input type="number" id="cols" value="10" min="1">
             <button onclick="createGrid()">Generuj</button>
@@ -20,7 +21,7 @@
         <pre id="output"></pre>
         <button class="copy-button" onclick="copyOutput()">Kopiuj do schowka</button>
         <div class="char-counter">
-            Liczba znaków: <span id="charCount">0</span> 
+            Liczba znaków: <span id="charCount">0</span> / 2000 
             <span class="nitro-info">(Jeśli masz Nitro to 4000)</span>
         </div>
     </div>

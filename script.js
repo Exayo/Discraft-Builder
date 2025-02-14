@@ -1,8 +1,18 @@
-const blocks = [
-    'Grass', 'Dirt', 'Steve1', 'Steve2', 'Obsidian', 
-    'Portal', 'Leaves', 'Log', 'RedFlower', 
-    'YellowFlower', 'Chest', 'Air', 'Stone'
-];
+const blockMap = {
+    'Obsidian': 'm1',
+    'Portal': 'm2',
+    'Grass': 'm3',
+    'Steve1': 'm4',
+    'Steve2': 'm5',
+    'Dirt': 'm6',
+    'Air': 'm7',
+    'Leaves': 'm8',
+    'Log': 'm9',
+    'Chest': 'm10',
+    'RedFlower': 'm11',
+    'YellowFlower': 'm12',
+    'Stone': 'm13'
+};
 
 let currentTool = 'Air';
 let isMouseDown = false;
@@ -14,13 +24,11 @@ function createGrid() {
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
     gridData = [];
-    
-    // Inicjowanie
+
     for(let i = 0; i < rows; i++) {
         gridData.push(Array(cols).fill('Air'));
     }
-    
-    // Elementy siatki
+
     for(let i = 0; i < rows; i++) {
         const row = document.createElement('div');
         row.className = 'row';
@@ -29,7 +37,7 @@ function createGrid() {
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.dataset.type = 'Air';
-            cell.style.backgroundColor = getColor('Air');
+            cell.style.backgroundImage = `url('Assets/m7.png')`;
             
             cell.addEventListener('mousedown', () => {
                 isMouseDown = true;
@@ -56,128 +64,100 @@ function paintCell(row, col, cell) {
     }
     
     cell.dataset.type = gridData[row][col];
-    cell.style.backgroundColor = getColor(gridData[row][col]);
+    cell.style.backgroundImage = gridData[row][col] === 'Air' 
+        ? ''
+        : `url('Assets/${blockMap[gridData[row][col]]}.png')`;
     updateOutput();
 }
 
-function getColor(type) {
-    const colors = {
-        'Grass': '#00ff00',
-        'Dirt': '#804000',
-        'Steve1': '#87CEEB',
-        'Steve2': '#4682B4',
-        'Obsidian': '#191970',
-        'Portal': '#800080',
-        'Leaves': '#008000',
-        'Log': '#8B4513',
-        'RedFlower': '#ff0000',
-        'YellowFlower': '#ffff00',
-        'Chest': '#D2691E',
-        'Air': '#ffffff',
-        'Stone': '#808080'
-    };
-    return colors[type];
-}
-
 function updateOutput() {
-    const blockCodes = {
-        'Obsidian': 'm1',
-        'Portal': 'm2',
-        'Grass': 'm3',
-        'Steve1': 'm4',
-        'Steve2': 'm5',
-        'Dirt': 'm6',
-        'Air': 'm7',
-        'Leaves': 'm8',
-        'Log': 'm9',
-        'Chest': 'm10',
-        'RedFlower': 'm11',
-        'YellowFlower': 'm12',
-        'Stone': 'm13'
-    };
-
     let total = 0;
     const outputLines = gridData.map(row => {
         let line = '';
-        for (let j = 0; j < row.length; j++) {
+        for(let j = 0; j < row.length; j++) {
             const cell = row[j];
-            let code;
-            let shouldAdd = false;
-
-            if (cell !== 'Air') {
-                code = blockCodes[cell];
-                line += `:${code}:`;
-                shouldAdd = true;
-            } else {
+            if(cell === 'Air') {
                 const hasNonAirRight = row.slice(j + 1).some(c => c !== 'Air');
-                if (hasNonAirRight) {
-                    code = blockCodes[cell];
-                    line += `:${code}:`;
-                    shouldAdd = true;
+                if(hasNonAirRight) {
+                    line += `:${blockMap[cell]}:`;
+                    total += 25;
                 }
-            }
-
-            if (shouldAdd) {
-                const numberPart = parseInt(code.substring(1), 10);
-                total += numberPart >= 10 ? 26 : 25;
+            } else {
+                line += `:${blockMap[cell]}:`;
+                const code = blockMap[cell];
+                total += code.length >= 3 ? 26 : 25;
             }
         }
         return line;
     });
 
     const output = outputLines.join('\n');
-    const charCountElement = document.getElementById('charCount');
-    
-    // Aktualizacja wyświetlacza
-    charCountElement.innerHTML = `
-        <span class="${total > 2000 ? 'limit-warning' : ''}">${total}</span>
-        / 2000
-    `;
-    
     document.getElementById('output').textContent = output;
+    
+    const charCountElement = document.getElementById('charCount');
+    charCountElement.innerHTML = total > 2000 
+        ? `<span class="limit-warning">${total}</span>` 
+        : total;
 }
 
-// Narzędzia
 function initTools() {
     const toolsContainer = document.getElementById('tools');
     
-    blocks.forEach(block => {
+    Object.entries(blockMap).forEach(([name, id]) => {
+        if(name === 'Air') return;
+        
         const tool = document.createElement('div');
         tool.className = 'tool';
-        tool.textContent = block;
-        tool.style.backgroundColor = getColor(block);
+        tool.dataset.name = name;
+        tool.innerHTML = `<img src="Assets/${id}.png" alt="${name}">`;
         
         tool.addEventListener('click', () => {
             document.querySelectorAll('.tool').forEach(t => t.classList.remove('selected'));
             tool.classList.add('selected');
-            currentTool = block;
+            currentTool = name;
         });
         
         toolsContainer.appendChild(tool);
     });
+
+    // Eraser tool
+    const eraser = document.createElement('div');
+    eraser.className = 'tool';
+    eraser.dataset.name = 'Gumka';
+    eraser.innerHTML = `
+        <div style="
+            width: 100%;
+            height: 100%;
+            background: #ff4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        ">✖</div>
+    `;
+    
+    eraser.addEventListener('click', () => {
+        document.querySelectorAll('.tool').forEach(t => t.classList.remove('selected'));
+        eraser.classList.add('selected');
+        currentTool = 'Eraser';
+    });
+    
+    toolsContainer.appendChild(eraser);
 }
 
 function copyOutput() {
     const outputText = document.getElementById('output').textContent;
-    
     navigator.clipboard.writeText(outputText).then(() => {
-        // Pokazanie potwierdzenia kopiowania
         const button = document.querySelector('.copy-button');
-        const originalText = button.textContent;
         button.textContent = "Skopiowano!";
-        button.style.backgroundColor = "#2196F3";
-        
-        // Przywrócenie oryginalnego tekstu po 2 sekundach
+        button.style.backgroundColor = "#4CAF50";
         setTimeout(() => {
-            button.textContent = originalText;
-            button.style.backgroundColor = "#4CAF50";
+            button.textContent = "Kopiuj do schowka";
         }, 2000);
-    }).catch(err => {
-        alert("Błąd podczas kopiowania: " + err);
     });
 }
 
 document.addEventListener('mouseup', () => isMouseDown = false);
-
 initTools();
 createGrid();

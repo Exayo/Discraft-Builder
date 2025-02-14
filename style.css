@@ -1,11 +1,58 @@
+:root {
+    --cell-size: min(5vw, 40px);
+    --tool-size: 90px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 15px;
+    background: #f5f5f5;
+}
+
 .container {
-    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.grid-controls {
+    margin-bottom: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.grid-controls input {
+    width: 80px;
+    padding: 8px 12px;
+    margin: 0 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.grid-controls button {
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.grid-controls button:hover {
+    background: #45a049;
 }
 
 .grid {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
     display: inline-block;
-    border: 1px solid #ccc;
-    margin: 10px 0;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 15px 0;
 }
 
 .row {
@@ -13,62 +60,140 @@
 }
 
 .cell {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #eee;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    min-width: 30px;
+    min-height: 30px;
+    border: 1px solid #ddd;
     cursor: pointer;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.cell[data-type="Air"] {
+    background-image: 
+        linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+        linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+        linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
 }
 
 .tools {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
-    margin: 10px 0;
+    gap: 10px;
+    margin: 20px 0;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .tool {
-    padding: 10px;
+    padding: 0;
     border: 2px solid transparent;
+    border-radius: 6px;
     cursor: pointer;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.tool::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 10px;
+    padding: 2px;
+    text-align: center;
+}
+
+.tool img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .selected {
-    border-color: #000;
+    border-color: #2196F3 !important;
+    box-shadow: 0 0 8px rgba(33,150,243,0.4);
 }
 
 #output {
     font-family: monospace;
-    white-space: pre;
-    padding: 10px;
-    background: #f0f0f0;
+    white-space: pre-wrap;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.copy-button {
+    margin: 15px 0;
+    padding: 12px 25px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+}
+
+.copy-button:hover {
+    background: #1976D2;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .char-counter {
-    margin-top: 10px;
-    font-family: monospace;
+    margin: 15px 0;
+    font-size: 14px;
     color: #666;
 }
 
 .limit-warning {
-    color: red;
+    color: #f44336 !important;
     font-weight: bold;
 }
 
-.copy-button {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+@media (max-width: 768px) {
+    :root {
+        --cell-size: 7vw;
+    }
+
+    .tool {
+        width: 50px;
+        height: 50px;
+    }
+
+    .grid-controls input {
+        width: 60px;
+        padding: 8px;
+    }
 }
 
-.copy-button:hover {
-    background-color: #45a049;
-}
+@media (max-width: 480px) {
+    :root {
+        --cell-size: 10vw;
+    }
 
-.copy-button:active {
-    background-color: #3d8b40;
+    .grid-controls button {
+        width: 100%;
+        margin-top: 10px;
+    }
 }
